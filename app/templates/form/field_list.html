@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Field List Demo</h1>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <p>
+    <label>{{ form.name.label }}</label>
+    {{ form.name() }}
+  </p>
+  <p id="emails">
+    {% for e in form.emails %}
+    <label>{{ e.email.label }}</label>
+    {{ e.email() }}
+    {% endfor %}
+  </p>
+  <button hx-post="{{ url_for('form.demo_field_list_add_email') }}" hx-target="#emails" hx-swap="beforeend">Add Email</button>
+</form>
+{% endblock %}
