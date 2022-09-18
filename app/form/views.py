@@ -4,16 +4,11 @@ from app.form import form_bp
 from app.form.forms import UserForm
 
 
-@form_bp.route('/field-list', methods=['GET', 'POST'])
+@form_bp.route('/field-list')
 def demo_field_list():
-    action = request.args.get('action')
     form = UserForm()
     if form.validate_on_submit():
-        if action == 'add-email':
-            form.emails.append_entry()
-            return render_template('form/field_list.html', form=form)
-        else:
-            return 'Done'
+        return 'Done'
     return render_template('form/field_list.html', form=form)
 
 
@@ -30,3 +25,14 @@ def demo_field_list_add_email():
         </div>
     </div>
     '''.format(email_form.label, email_form.email())
+
+
+@form_bp.route('/modal1')
+def demo_form_modal():
+    form = UserForm()
+    return render_template('form/form_modal1.html', form=form)
+
+
+@form_bp.route('/modal1_template')
+def get_modal1_template():
+    return render_template('form/modal1.html')
