@@ -3,7 +3,7 @@ from wtforms import StringField, EmailField, FormField, FieldList
 
 
 class EmailForm(FlaskForm):
-    email = EmailField('Email')
+    email = EmailField('Email', render_kw={'class': 'input'})
 
 
 class UserForm(FlaskForm):

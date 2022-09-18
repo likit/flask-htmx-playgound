@@ -23,8 +23,10 @@ def demo_field_list_add_email():
     form.emails.append_entry()
     email_form = form.emails[-1]
     return '''
-    <p>
+    <div class="field">
         <label>{}</label>
+        <div class="control">
         {}
-    </p>
-    '''.format(email_form.label, email_form())
+        </div>
+    </div>
+    '''.format(email_form.label, email_form.email())
