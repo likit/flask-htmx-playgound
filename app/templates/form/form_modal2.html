@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title has-text-centered">Modal Form Demo</h1>
+<div class="container">
+  <div class="columns">
+    <div class="column is-one-third is-offset-4">
+        <div id="modal-here"></div>
+        <table class="table" id="data-table"></table>
+        <button hx-get="{{ url_for('form.get_modal2_template') }}"
+                class="button is-info" hx-target="#modal-here">Add User</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

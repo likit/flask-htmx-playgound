@@ -1,0 +1,42 @@
+<div id="modal" class="modal is-active">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">New User</p>
+      <button type="button" id="cancelButton" class="delete" aria-label="close"></button>
+    </header>
+    <form hx-post="{{ url_for('form.modal2_form') }}"
+          hx-target="#data-table" hx-swap="beforeend">
+      {{ form.hidden_tag() }}
+    <section class="modal-card-body">
+        <div class="field">
+          <label>{{ form.name.label }}</label>
+          <div class="control">
+            {{ form.name(class="input") }}
+          </div>
+        </div>
+        {% for e in form.emails %}
+        {{ e.hidden_tag() }}
+        <div class="field">
+          <label>{{ e.email.label }}</label>
+          <div class="control">
+            {{ e.email() }}
+          </div>
+        </div>
+        {% endfor %}
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success">Save changes</button>
+    </footer>
+    </form>
+  </div>
+</div>
+
+<script>
+  window.document.getElementById("cancelButton").addEventListener("click", function() {
+	window.document.getElementById("modal").classList.remove("is-active")
+})
+  window.addEventListener('closeModal', (evt)=>{
+      window.document.getElementById("modal").classList.remove("is-active")
+  })
+</script>
