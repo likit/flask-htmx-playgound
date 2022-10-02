@@ -1,8 +1,7 @@
 from flask import render_template, request, make_response
 
 from app.form import form_bp
-from app.form.forms import UserForm
-
+from app.form.forms import UserForm, AppointmentForm
 
 users = []
 
@@ -60,3 +59,13 @@ def modal2_form():
         )
         resp.headers['HX-Trigger-After-Swap'] = 'closeModal'
         return resp
+
+
+@form_bp.route('/datepicker1', methods=['GET', 'POST'])
+def datepicker_form1():
+    form = AppointmentForm()
+    if form.validate_on_submit():
+        print(form.data)
+    else:
+        print(form.errors)
+    return render_template('form/datepicker1.html', form=form)

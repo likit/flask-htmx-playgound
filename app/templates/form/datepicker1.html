@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="field">
+        <label class="label">{{ form.purchase_date.label }}</label>
+        <div class="control">
+            {{ form.purchase_date(class="input") }}
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">{{ form.start_date.label }}</label>
+        <div class="control">
+            {{ form.start_date(class="input") }}
+        </div>
+    </div>
+    <div class="field">
+        <label class="label">{{ form.end_date.label }}</label>
+        <div class="control">
+            {{ form.end_date(class="input") }}
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            {{ form.submit(class="button") }}
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(()=>{
+        let DATEFORMAT = 'DD/MM/YYYY'
+        let purchaseInput = $('input[name="purchase_date"]')
+        let startDateInput = $('input[name="start_date"]')
+        let endDateInput = $('input[name="end_date"]')
+
+        let purchaseCal = $('input[name="purchase_date"]').daterangepicker({
+            singleDatePicker: true,
+            autoUpdateInput: true,
+            locale: {
+                format: DATEFORMAT,
+            }
+        });
+        let startCal = $('input[name="start_date"]').daterangepicker({
+            singleDatePicker: true,
+            startDate: moment(purchaseInput.val(), DATEFORMAT).add(1, "days"),
+            autoUpdateInput: true,
+            locale: {
+                format: DATEFORMAT,
+                cancelLabel: 'Clear'
+            }
+        });
+        let endCal = $('input[name="end_date"]').daterangepicker({
+            singleDatePicker: true,
+            autoUpdateInput: true,
+            startDate: moment(startDateInput.val(), DATEFORMAT).add(1, "years"),
+            locale: {
+                format: DATEFORMAT,
+                cancelLabel: 'Clear'
+            }
+        });
+        purchaseInput.on('apply.daterangepicker', (evt, picker)=>{
+            startCal.data('daterangepicker').setStartDate(moment(purchaseInput.val(), DATEFORMAT).add(1, "days").format(DATEFORMAT))
+            startCal.data('daterangepicker').setEndDate(moment(purchaseInput.val(), DATEFORMAT).add(1, "days").format(DATEFORMAT))
+        })
+        startDateInput.on('change', ()=>{
+            endCal.data('daterangepicker').setStartDate(moment(startDateInput.val(), DATEFORMAT).add(1, "years").format(DATEFORMAT))
+            endCal.data('daterangepicker').setEndDate(moment(startDateInput.val(), DATEFORMAT).add(1, "years").format(DATEFORMAT))
+        })
+        endDateInput.on('cancel.daterangepicker', (evt, picker)=>{
+            endDateInput.val('')
+        })
+        startDateInput.on('cancel.daterangepicker', (evt, picker)=>{
+            startDateInput.val('')
+        })
+    })
+</script>
+{% endblock %}
