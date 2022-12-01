@@ -1,7 +1,7 @@
 import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, FormField, FieldList, DateField, SubmitField, Field
+from wtforms import StringField, EmailField, FormField, FieldList, DateField, SubmitField, Field, SelectField
 from wtforms.widgets import TextInput
 
 
@@ -9,9 +9,14 @@ class EmailForm(FlaskForm):
     email = EmailField('Email', render_kw={'class': 'input'})
 
 
+class AddressForm(FlaskForm):
+    province = SelectField('Province', choices=[(c, c) for c in ['กทม.', 'นนทบุรี', 'นครปฐม']])
+
+
 class UserForm(FlaskForm):
     name = StringField('Name')
     emails = FieldList(FormField(EmailForm), min_entries=1)
+    addresses = FieldList(FormField(AddressForm), min_entries=1)
 
 
 class DatePickerField(Field):

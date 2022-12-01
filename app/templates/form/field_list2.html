@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title has-text-centered">Field List Demo</h1>
+<div class="container">
+  <div class="columns">
+    <div class="column is-one-third is-offset-4">
+      <form method="post">
+        {{ form.hidden_tag() }}
+        <p>
+        <div class="field">
+          <label>{{ form.name.label }}</label>
+          <div class="control">
+            {{ form.name(class="input") }}
+          </div>
+        </div>
+        </p>
+        <hr>
+        <div id="addresses">
+          {% for e in form.addresses %}
+          <div class="field">
+            <label>{{ e.province.label }} First</label>
+            <div>
+              {{ e.province(class='province') }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <hr>
+        <button class="button is-success" hx-post="{{ url_for('form.demo_field_list_add_address') }}"
+                hx-target="#addresses" hx-swap="beforeend">Add Address</button>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+  // In your Javascript (external .js resource or <script> tag)
+  $(document).ready(function() {
+      $('.province').select2();
+  });
+  function initialize_select() {
+    $('.province').select2();
+  }
+  document.addEventListener('initializeSelector', initialize_select)
+</script>
+{% endblock %}

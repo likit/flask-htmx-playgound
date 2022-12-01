@@ -28,6 +28,35 @@ def demo_field_list_add_email():
     '''.format(email_form.label, email_form.email())
 
 
+@form_bp.route('/field-list2')
+def demo_field_list2():
+    form = UserForm()
+    if form.validate_on_submit():
+        return 'Done'
+    return render_template('form/field_list2.html', form=form)
+
+
+@form_bp.route('/field-list/add-address', methods=['POST'])
+def demo_field_list_add_address():
+    form = UserForm()
+    form.addresses.append_entry()
+    address_form = form.addresses[-1]
+    partial = '''
+    <div class="field">
+        <label>{}</label>
+        <div>
+        {}
+        </div>
+    </div>
+    '''.format(address_form.province.label, address_form.province(class_='province'))
+
+    resp = make_response(partial)
+    resp.headers['HX-Trigger-After-Swap'] = 'initializeSelector'
+    return resp
+
+
+
+
 @form_bp.route('/modal1')
 def demo_form_modal():
     form = UserForm()

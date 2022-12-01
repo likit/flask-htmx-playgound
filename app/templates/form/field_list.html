@@ -15,7 +15,7 @@
           </div>
         </div>
         </p>
-        <p id="emails">
+        <div id="emails">
           {% for e in form.emails %}
           <div class="field">
             <label>{{ e.email.label }}</label>
@@ -24,7 +24,7 @@
             </div>
           </div>
           {% endfor %}
-        </p>
+        </div>
         <button class="button is-success" hx-post="{{ url_for('form.demo_field_list_add_email') }}" hx-target="#emails" hx-swap="beforeend">Add Email</button>
       </form>
 
