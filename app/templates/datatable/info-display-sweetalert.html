@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table class="table is-striped is-bordered">
+  <tr>
+    <td>One</td>
+    <td>
+      <button onclick="onViewClick(1)">view</button>
+    </td>
+  </tr>
+  <tr>
+    <td>Two</td>
+    <td>
+      <button onclick="onViewClick(2)">view</button>
+    </td>
+  </tr>
+  <tr>
+    <td>Three</td>
+    <td>
+      <button onclick="onViewClick(3)">view</button>
+    </td>
+  </tr>
+</table>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+  function onViewClick (dataId) {
+    fetch(`/datatable/api/demo/item/${dataId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText)
+        }
+        return response.json().then((data)=>{
+          Swal.fire({
+            title: `${data.title}'s info`,
+            text: data.message
+          })
+        })
+      })
+      .catch(error => {
+        Swal.showValidationMessage(`Request failed: ${error}`)
+      })
+  }
+</script>
+{% endblock %}

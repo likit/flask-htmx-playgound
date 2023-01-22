@@ -11,6 +11,10 @@ from app.calendar import cal_bp
 
 app.register_blueprint(cal_bp)
 
+from app.datatable import table_bp
+
+app.register_blueprint(table_bp)
+
 
 @app.route('/')
 def home():
