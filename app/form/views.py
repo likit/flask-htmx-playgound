@@ -5,6 +5,7 @@ from app.form.forms import UserForm, AppointmentForm
 
 users = []
 
+
 @form_bp.route('/field-list')
 def demo_field_list():
     form = UserForm()
@@ -55,8 +56,6 @@ def demo_field_list_add_address():
     return resp
 
 
-
-
 @form_bp.route('/modal1')
 def demo_form_modal():
     form = UserForm()
@@ -85,7 +84,7 @@ def modal2_form():
             <td>{}</td><td>{}</td>
         </tr>
         '''.format(form.name.data, form.emails[0].email.data)
-        )
+                             )
         resp.headers['HX-Trigger-After-Swap'] = 'closeModal'
         return resp
 
@@ -98,3 +97,8 @@ def datepicker_form1():
     else:
         print(form.errors)
     return render_template('form/datepicker1.html', form=form)
+
+
+@form_bp.route('/selectjs-new-item')
+def selectjs_new_item():
+    return render_template('form/selectjs-new-item.html')

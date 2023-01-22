@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form id="myForm">
+    <select class="js-example-basic-single" id="selectjs-control">
+        <option value="1">One</option>
+        <option value="2">Two</option>
+        <option value="3">Three</option>
+    </select>
+    <!-- It has to be an input element, a button will not work.-->
+    <input class="button is-small is-rounded is-danger"
+           value="Add item"
+           type="button" id="addBtn"
+           onclick="addItem('#selectjs-control')">
+    </input>
+    <div class="buttons">
+        <input type="submit" value="Submit" class="button is-success">
+    </div>
+</form>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    $('#selectjs-control').select2({
+        placeholder: 'Select an option',
+        width: '600px'
+    });
+    function addItem(controlId) {
+        // Passing a control ID so that this code can be reused with all selectors.
+        let selector = $(controlId);
+        let newItem = prompt('Enter new item:');
+        if (newItem !== null && newItem !== "") {
+            if (selector.find("option[value='" + newItem + "']").length) {
+                selector.val(newItem).trigger('change');
+            } else {
+                let newOption = new Option(newItem, newItem, true, true);
+                selector.append(newOption).trigger('change');
+            }
+        }
+    }
+</script>
+{% endblock %}
