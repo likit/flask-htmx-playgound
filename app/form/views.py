@@ -1,3 +1,5 @@
+import time
+
 from flask import render_template, request, make_response
 
 from app.form import form_bp
@@ -65,6 +67,14 @@ def demo_form_modal():
 @form_bp.route('/modal1_template')
 def get_modal1_template():
     return render_template('form/modal1.html')
+
+
+@form_bp.route('/loading')
+def loading():
+    time.sleep(5)
+    resp = make_response()
+    resp.headers['HX-Trigger-After-Swap'] = 'closeModal'
+    return resp
 
 
 @form_bp.route('/modal2_template')

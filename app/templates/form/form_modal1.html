@@ -5,14 +5,22 @@
 <div class="container">
   <div class="columns">
     <div class="column is-one-third is-offset-4">
-      <form method="post">
-        {{ form.hidden_tag() }}
         <div id="modal-here"></div>
         <button hx-get="{{ url_for('form.get_modal1_template') }}"
                 class="button is-info" hx-target="#modal-here">Modal</button>
-      </form>
     </div>
   </div>
 </div>
 
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+  document.addEventListener('htmx:beforeSend', function () {
+    htmx.addClass('#submitButton', 'is-loading')
+  })
+  document.addEventListener('closeModal', function () {
+    htmx.removeClass('#modal', 'is-active')
+  })
+</script>
 {% endblock %}
