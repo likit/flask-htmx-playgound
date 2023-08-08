@@ -1,4 +1,15 @@
 {% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<style>
+    .select2-container .select2-choice {
+    padding: 5px 10px;
+    height: 40px;
+    width: 132px;
+    font-size: 1.2em;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <form id="myForm">
@@ -23,7 +34,7 @@
 <script>
     $('#selectjs-control').select2({
         placeholder: 'Select an option',
-        width: '600px'
+        width: '600px',
     });
     function addItem(controlId) {
         // Passing a control ID so that this code can be reused with all selectors.
