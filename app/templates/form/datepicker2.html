@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section">
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div id="date-fields">
+            {% for date_form in form.dates %}
+            <div class="field has-addons" id="{{date_form.date.id}}-container">
+                <label class="label">{{ date_form.date.label }}</label>
+                <div class="control is-expanded">
+                    {{ date_form.date(class="input") }}
+                    <p class="help">{{date_form.date.id}}</p>
+                </div>
+                <div class="control">
+                    <button class="button is-danger"
+                            hx-confirm="Are you sure?"
+                            hx-swap="outerHTML"
+                            hx-target="#{{date_form.date.id}}-container"
+                            hx-delete="{{url_for('form.remove_reservation_date_form_field', name=date_form.date.name)}}">
+                        Remove
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="field is-grouped is-centered">
+            <div class="control">
+                {{ form.submit(class="button") }}
+                <!-- add hx-headers below if implemented with csrf token -->
+                <button class="button is-success is-outlined"
+                        hx-post="{{url_for('form.add_reservation_date_form_field')}}"
+                        hx-swap="beforeend"
+                        hx-target="#date-fields"
+                >Add</button>
+            </div>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    let DATEFORMAT = 'DD/MM/YYYY'
+    let initDateRangePicker = function () {
+        $('input[name$="date"]').toArray().forEach((p)=> {
+            if ($(p).data('daterangepicker') === undefined) {
+                $(p).daterangepicker({
+                    format: DATEFORMAT,
+                    singleDatePicker: true,
+                    startDate: moment().add(1, 'days')
+                })
+            }
+        })
+    }
+    $(document).ready(()=>{
+        initDateRangePicker()
+        document.addEventListener('initDatePicker', initDateRangePicker)
+    })
+</script>
+{% endblock %}

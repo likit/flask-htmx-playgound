@@ -1,9 +1,9 @@
 import time
 
-from flask import render_template, request, make_response
+from flask import render_template, request, make_response, url_for
 
 from app.form import form_bp
-from app.form.forms import UserForm, AppointmentForm
+from app.form.forms import UserForm, AppointmentForm, ReservationForm
 
 users = []
 
@@ -107,6 +107,60 @@ def datepicker_form1():
     else:
         print(form.errors)
     return render_template('form/datepicker1.html', form=form)
+
+
+@form_bp.route('/datepicker2', methods=['GET', 'POST'])
+def datepicker_form2():
+    form = ReservationForm()
+    if form.validate_on_submit():
+        print(form.data)
+    else:
+        print(form.errors)
+    return render_template('form/datepicker2.html', form=form)
+
+
+@form_bp.route('/datepicker2/add-date-field', methods=['GET', 'POST'])
+def add_reservation_date_form_field():
+    form = ReservationForm()
+    form.dates.append_entry()
+    print(form.dates)
+    entry_ = form.dates[-1]
+    template = f'''
+    <div class="field has-addons" id="{entry_.date.id}-container">
+        <label class="label">{entry_.date.label}</label>
+        <div class="control is-expanded">
+            {entry_.date(class_="input")}
+            <p class="help">{entry_.date.id}</p>
+        </div>
+        <div class="control">
+            <button class="button is-danger"
+                    hx-confirm="Are you sure?"
+                    hx-swap="outerHTML"
+                    hx-target="#{entry_.date.id}-container"
+                    hx-delete="{url_for('form.remove_reservation_date_form_field', name=entry_.date.name)}">
+                Remove
+            </button>
+        </div>
+    </div>
+    '''
+    print(template)
+    resp = make_response(template)
+    resp.headers['HX-Trigger-After-Swap'] = 'initDatePicker'
+    return resp
+
+
+@form_bp.route('/datepicker2/remove-date-field/<name>', methods=['DELETE'])
+def remove_reservation_date_form_field(name):
+    form = ReservationForm(request.form)
+    entries = []
+    for i in range(len(form.dates)):
+        e = form.dates.pop_entry()
+        entries.append(e)
+    entries.reverse()
+    for e in entries:
+        if e.name != name:
+            form.dates.append_entry(e)
+    return ''
 
 
 @form_bp.route('/selectjs-new-item')

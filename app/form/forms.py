@@ -40,3 +40,12 @@ class AppointmentForm(FlaskForm):
     start_date = DatePickerField('Start Guarantee Date')
     end_date = DatePickerField('End Guarantee Date')
     submit = SubmitField('Send')
+
+
+class DateForm(FlaskForm):
+    date = DatePickerField('Date')
+
+
+class ReservationForm(FlaskForm):
+    dates = FieldList(FormField(DateForm), min_entries=1)
+    submit = SubmitField('Submit')
