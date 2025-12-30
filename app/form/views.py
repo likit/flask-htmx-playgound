@@ -3,7 +3,7 @@ import time
 from flask import render_template, request, make_response, url_for
 
 from app.form import form_bp
-from app.form.forms import UserForm, AppointmentForm, ReservationForm
+from app.form.forms import UserForm, AppointmentForm, ReservationForm, DynamicDropdownForm
 
 users = []
 
@@ -166,3 +166,70 @@ def remove_reservation_date_form_field(name):
 @form_bp.route('/selectjs-new-item')
 def selectjs_new_item():
     return render_template('form/selectjs-new-item.html')
+
+
+dropdown_items = {
+    'provinces': {
+        'ราชบุรี': ['โพธาราม', 'บ้านโป่ง', 'สวนผึ้ง'],
+        'เพชรบุรี': ['เขาย้อย', 'ชะอำ', 'ท่ายาง'],
+        'นครปฐม': ['พุทธมณฑล', 'สามพราน', 'ดอนตูม']
+    },
+    'districts': {
+        'โพธาราม': ['ดอนกระเบื้อง', 'หนองโพ', 'คลองตาคต'],
+        'บ้านโป่ง': ['หนองอ้อ', 'หนองกก'],
+        'สวนผึ้ง': ['ตะนาวศรึ', 'ท่าเคย'],
+        'เขาย้อย': ['ทับคาง', 'หนองปลาไหล', 'หนองปรง', 'ห้วยโรง'],
+        'ชะอำ': ['บางเก่า'],
+        'ท่ายาง': ['หนองจอก', 'ท่าคอย'],
+        'พุทธมณฑล': ['ศาลายา', 'คลองโยง', 'มหาสวัสดิ์'],
+        'สามพราน': ['บางเตย', 'สามพราน', 'คลองจินดา'],
+        'ดอนตูม': ['ห้วยพระ', 'ดอนพุทรา', 'ห้วยด้วน'],
+    }
+}
+
+@form_bp.route('/dynamic-dropdown-1', methods=['GET', 'POST'])
+def dynamic_dropdown1():
+    if request.method == 'GET':
+        form = DynamicDropdownForm(data={
+            'province': 'เพชรบุรี',
+            'district': 'ท่ายาง',
+            'tambon': 'หนองจอก'
+        })
+    if request.method == 'POST':
+        form = DynamicDropdownForm(request.form)
+        print(form.data, 'post request')
+    form.province.choices = [(c,c) for c in dropdown_items['provinces'].keys()]
+    if form.province.data:
+        form.district.choices = [(c, c) for c in dropdown_items['provinces'].get(form.province.data)]
+    if form.district.data:
+        form.tambon.choices = [(c, c) for c in dropdown_items['districts'].get(form.district.data, [])]
+    else:
+        form.district.choices = [(c, c) for c in dropdown_items['provinces'].get(form.province.data)]
+        district, _ = form.district.choices[0]
+        form.tambon.choices = [(c, c) for c in dropdown_items['districts'].get(district)]
+
+    return render_template('form/dynamic_dropdowns1.html', form=form)
+
+
+@form_bp.route('/api/dynamic-dropdown-1/districts', methods=['POST'])
+def get_dynamic_dropdown1_items():
+    trigger = request.headers.get('hx-trigger')
+    print(request.form)
+    form = DynamicDropdownForm()
+    if trigger == 'province':
+        form.district.choices = [(c, c) for c in dropdown_items['provinces'].get(form.province.data)]
+        district, _ = form.district.choices[0]
+        form.tambon.choices = [(c, c) for c in dropdown_items['districts'].get(district)]
+    elif trigger == 'district' or trigger == 'tambon':
+        form.tambon.choices = [(c, c) for c in dropdown_items['districts'].get(form.district.data, [])]
+        form.district.choices = [(c, c) for c in dropdown_items['provinces'].get(form.province.data)]
+
+    form.province.choices = [(c,c) for c in dropdown_items['provinces'].keys()]
+
+    template = f'''
+    {form.province(**{'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')})}
+    {form.district(**{'hx-swap-oob': 'true', 'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')})}
+    {form.tambon(**{'hx-swap-oob': 'true', 'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')})}
+    '''
+    return template
+

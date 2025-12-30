@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="section">
+    <div class="content">
+        <div class="notification">
+            <p>
+                recipe นี้สาธิตการสร้าง dropdown select ที่มีรายการเชื่อมโยงกัน 3 รายการโดยใช้ htmx ทั้งหมด
+            </p>
+            <p>
+                recipe นี้ใช้การส่ง form data ทั้งหมดแทนการส่งเฉพาะ select data เพื่อความสะดวกในการตรวจสอบ กำหนดโดย hx-include="closest form" และใช้ hx-trigger เพื่อตรวจสอบว่า select อันใดมีการเปลี่ยนแปลง โดย hx-trigger สามารถตรวจสอบได้ใน view โดยใช้ request.headers.get('HX-Trigger')
+                นอกจากนั้นยังใช้เทคนิค hx-swap-oob เพื่อความสะดวกในการ swap dropdowns ทั้งหมด เนื่องจาก hx-swap-oob=true จะนำ element นั้นไปแทนที่ ณ ตำแหน่งที่มี id ตรงกันโดยอัตโนมัติ
+                ดังนั้นในการตั้งค่า hx-target จึงตั้งให้เป็น #province เท่านั้นได้
+            </p>
+            <p>
+                ในตัวอย่างนี้มีการตั้งค่าตั้งต้นให้แล้วเพื่อทดสอบการแก้ไข โดยกำหนดใน view ว่า form = DynamicForm(data={'province': 'เพชรบุรี',...})
+            </p>
+        </div>
+        <form id="form" method="post">
+            <div class="field">
+                <label class="label">{{ form.province.label }}</label>
+                <div class="select">
+                    {{ form.province(**{'hx-include': 'closest form', 'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')}) }}
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ form.district.label }}</label>
+                <div class="select">
+                    {{ form.district(**{'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')}) }}
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">{{ form.tambon.label }}</label>
+                <div class="select">
+                    {{ form.tambon(**{'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown1_items')}) }}
+                </div>
+            </div>
+            <div class="field">
+                <input type="submit" value="Submit" class="button is-success"/>
+            </div>
+        </form>
+    </div>
+    </section>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script>
+    </script>
+{% endblock %}

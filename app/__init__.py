@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'asupersecretivekey'
@@ -18,4 +18,4 @@ app.register_blueprint(table_bp)
 
 @app.route('/')
 def home():
-    return 'This is a demo app.'
+    return render_template('index.html')

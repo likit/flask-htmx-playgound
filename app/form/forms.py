@@ -49,3 +49,9 @@ class DateForm(FlaskForm):
 class ReservationForm(FlaskForm):
     dates = FieldList(FormField(DateForm), min_entries=1)
     submit = SubmitField('Submit')
+
+
+class DynamicDropdownForm(FlaskForm):
+    province = SelectField('Province')
+    district = SelectField('District')
+    tambon = SelectField('Tambon')
