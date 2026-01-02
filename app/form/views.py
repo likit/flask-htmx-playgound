@@ -241,7 +241,7 @@ def dynamic_dropdown2():
     if request.method == 'GET':
         form = DynamicDropdownQuerySelectForm()
     if request.method == 'POST':
-        form = DynamicDropdownForm(request.form)
+        form = DynamicDropdownQuerySelectForm(request.form)
     if form.province.data:
         form.district.query = form.province.data.districts
     if form.district.data:
