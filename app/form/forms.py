@@ -1,8 +1,20 @@
 import datetime
 
 from flask_wtf import FlaskForm
+from wtforms_alchemy import model_form_factory
 from wtforms import StringField, EmailField, FormField, FieldList, DateField, SubmitField, Field, SelectField
 from wtforms.widgets import TextInput
+from wtforms_alchemy import QuerySelectField
+
+from app import db
+from app.form.models import Province, District, Tambon
+
+BaseModelForm = model_form_factory(FlaskForm)
+
+class ModelForm(BaseModelForm):
+    @classmethod
+    def get_session(self):
+        return db.session
 
 
 class EmailForm(FlaskForm):
@@ -55,3 +67,9 @@ class DynamicDropdownForm(FlaskForm):
     province = SelectField('Province')
     district = SelectField('District')
     tambon = SelectField('Tambon')
+
+
+class DynamicDropdownQuerySelectForm(ModelForm):
+    province = QuerySelectField('Province', query_factory=lambda: Province.query.all())
+    district = QuerySelectField('District', query_factory=lambda: District.query.all())
+    tambon = QuerySelectField('Tambon', query_factory=lambda: Tambon.query.all())

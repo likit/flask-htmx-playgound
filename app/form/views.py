@@ -3,7 +3,9 @@ import time
 from flask import render_template, request, make_response, url_for
 
 from app.form import form_bp
-from app.form.forms import UserForm, AppointmentForm, ReservationForm, DynamicDropdownForm
+from app.form.forms import (UserForm, AppointmentForm, ReservationForm,
+                            DynamicDropdownForm, DynamicDropdownQuerySelectForm)
+from app.form.models import Province
 
 users = []
 
@@ -233,3 +235,40 @@ def get_dynamic_dropdown1_items():
     '''
     return template
 
+
+@form_bp.route('/dynamic-dropdown-2', methods=['GET', 'POST'])
+def dynamic_dropdown2():
+    if request.method == 'GET':
+        form = DynamicDropdownQuerySelectForm()
+    if request.method == 'POST':
+        form = DynamicDropdownForm(request.form)
+    if form.province.data:
+        form.district.query = form.province.data.districts
+    if form.district.data:
+        form.tambon.query = form.district.data.tambons
+    else:
+        province = Province.query.first()
+        form.district.query = province.districts
+        form.tambon.query = province.districts[0].tambons
+
+    return render_template('form/dynamic_dropdowns2.html', form=form)
+
+
+@form_bp.route('/api/dynamic-dropdown-2/districts', methods=['POST'])
+def get_dynamic_dropdown2_items():
+    trigger = request.headers.get('hx-trigger')
+    form = DynamicDropdownQuerySelectForm()
+    if trigger == 'province':
+        form.district.query = form.province.data.districts
+        district = form.province.data.districts[0]
+        form.tambon.query = district.tambons
+    elif trigger == 'district' or trigger == 'tambon':
+        form.district.query = form.province.data.districts
+        form.tambon.query = form.district.data.tambons
+
+    template = f'''
+    {form.province(**{'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown2_items')})}
+    {form.district(**{'hx-swap-oob': 'true', 'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown2_items')})}
+    {form.tambon(**{'hx-swap-oob': 'true', 'hx-trigger': 'change', 'hx-target': '#province', 'hx-swap': 'outerHTML', 'hx-post': url_for('form.get_dynamic_dropdown2_items')})}
+    '''
+    return template
